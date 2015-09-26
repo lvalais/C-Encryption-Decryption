@@ -1,0 +1,1926 @@
+/*
+	Writen by Lampros Valais
+	Matric number : 40178675
+	Edinburgh Napier University
+	1/3/2015
+	
+	Everything was written by me with the exception of Disk Cipher and SimpleSubstitutionCipher.
+	
+	
+*/
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<math.h>
+//#include"DiskCipher.h"
+
+/*
+ * Abstract:
+ * 	The function implements the simple substitution cipher
+ * Parameters:
+ * 	originalAlphabet - a pointer to a string containing the plain text alphabet
+ * 	codedAlphabet - a pointer to a string containing the cipher text alphabet
+ * 	originalMessage - a pointer to a string containing the message who will be encoded
+ * 	codedMessage - a pointer to a pre-allocated empty string who will contain the
+ * 				   encoded message.
+ * Returns:
+ * 	OPERATION_SUCCES - the algorithm has been applied successfully
+ * 	OPERATION_FAILED - the algorithm encountered a problem. See precondtions.
+ * Preconditions:
+ * 	 -originalAlphabet contains all the letters that appear in the originalMessage
+ * 	 -All symbols in the originalAlphabet should appear only once.
+ * 	 -the length of the coded alphabet string is equal to the length of
+ * 	 the originalAlphabet
+ * 	 -All symbols in the codedAlphabet should appear only once.
+ * 	 -codedMessage must be preallocated and have at least the size of
+ * 	 originalMessage
+
+ */
+
+//#include"SimpleSubstitutionCipher.h"
+#include<stdio.h>
+
+
+
+SimpleSubstitutionCipher_Code(char* originalAlphabet,
+									  	 	   char* codedAlphabet,
+									  	 	   char* originalMessage,
+									  	 	   char* encodedMessage)
+{
+	unsigned short alphabetLength = strlen(originalAlphabet);
+	unsigned int messageLength    = strlen(originalMessage);
+	unsigned int i = 0U;
+	char* pointer = NULL;
+	unsigned int position = 0U;
+	if( alphabetLength != strlen(codedAlphabet) )
+	{
+		//The lengths of the alphabets do not match
+		return 0;
+	}
+	for(i=0; i<=messageLength; i++)
+	{
+		pointer  = strchr(originalAlphabet, originalMessage[i]);
+		if(pointer==NULL)
+		{
+			//A character in the message was not found in the
+			//original alphabet
+			return 0;
+		}
+		else
+		{
+			position = pointer - originalAlphabet;
+			encodedMessage[i] = codedAlphabet[position];
+		}
+	}
+	encodedMessage[messageLength] = '\0';
+	return 0;
+}
+
+
+
+
+
+
+
+/* DISK CIPHER
+	* AlbertiCipher.c
+	*
+	*  Created on: Mar 19, 2012
+	*      Author: bogdan
+*/
+
+
+/*
+	* Abstract:
+	* Substitutes the letters from @originalMessage according
+	* to the specified @shift and @codedAlphabet
+	* Parameters:
+	* originalAlphabet - a pointer to a string containing the plain text alphabet
+	* encodedAlphabet - a pointer to a string containing the cipher text alphabet
+	* originalMessage - a pointer to a string containing the message who will be encoded
+	* codedMessage - a pointer to a pre-allocated empty string who will contain the
+	* 				   encoded message.
+	* shift - what is the offset used for the substitution
+	* Returns:
+	* 	OPERATION_SUCCES - the algorithm has been applied successfully
+	* 	OPERATION_FAILED - the algorithm encountered a problem. See precondtions.
+	* Preconditions:
+	* 	 -originalAlphabet contains all the letters that appear in the originalMessage
+	* 	 -All symbols in the originalAlphabet should appear only once.
+	* 	 -the length of the coded alphabet string is equal to the length of
+	* 	 the originalAlphabet
+	* 	 -All symbols in the codedAlphabet should appear only once.
+	* 	 -codedMessage must be preallocated and have at least the size of
+	* 	 originalMessage
+	*http://dystopiancode.blogspot.co.uk/2012/03/disk-cipher-algorithms-in-c.html
+*/
+
+int DiskCipher_Encode(char* originalAlphabet,
+char* codedAlphabet,
+char* originalMessage,
+char* encodedMessage,
+unsigned short shift)
+{
+	unsigned short alphabetLength = strlen(originalAlphabet);
+	unsigned int messageLength    = strlen(originalMessage);
+	unsigned int i = 0U;
+	char* pointer = NULL;
+	unsigned int position = 0U;
+	if( alphabetLength != strlen(codedAlphabet) )
+	{
+		//The lengths of the alphabets do not match
+		return 0;
+	}
+	for(i=0; i<messageLength; i++)
+	{
+		pointer  = strchr(originalAlphabet, originalMessage[i]);
+		if(pointer==NULL)
+		{
+			//A character in the message was not found in the
+			//original alphabet
+			return 0;
+		}
+		else
+		{
+			position = ((pointer - originalAlphabet) + shift)%alphabetLength;
+			encodedMessage[i] = codedAlphabet[position];
+		}
+	}
+	encodedMessage[messageLength] = '\0';
+	return 0;
+} 
+/*
+	* Abstract:
+	* Substitutes the letters from @encodedMessage according
+	* to the specified @shift and @codedAlphabet
+	* Parameters:
+	* originalAlphabet - a pointer to a string containing the plain text alphabet
+	* codedAlphabet - a pointer to a string containing the cipher text alphabet
+	* encodedMessage - a pointer to a string containing the encoded message
+	* decodedMessage - a pointer to a pre-allocated empty string who will contain the
+	* 				   encoded message.
+	* shift - what is the offset used for the substitution
+	* Returns:
+	* 	OPERATION_SUCCES - the algorithm has been applied successfully
+	* 	OPERATION_FAILED - the algorithm encountered a problem. See precondtions.
+	* Preconditions:
+	* 	 -codedAlphabet contains all the letters that appear in the codedMessage
+	* 	 -All symbols in the coded alphabet should appear only once.
+	* 	 -the length of the coded alphabet string is equal to the length of
+	* 	 the originalAlphabet
+	* 	 -All symbols in the originalAlphabet should appear only once.
+	* 	 -decodedMessage must be preallocated and have at least the size of
+	* 	 originalMessage
+*/
+
+
+int DiskCipher_Decode(char* originalAlphabet,
+char* codedAlphabet,
+char* encodedMessage,
+char* decodedMessage,
+unsigned short shift)
+{
+	unsigned short alphabetLength = strlen(originalAlphabet);
+	unsigned int messageLength    = strlen(encodedMessage);
+	unsigned int i = 0U;
+	char* pointer = NULL;
+	unsigned int position = 0U;
+	if( alphabetLength != strlen(codedAlphabet) )
+	{
+		//The lengths of the alphabets do not match
+		return 0;
+	}
+	for(i=0; i<messageLength; i++)
+	{
+		pointer  = strchr(codedAlphabet, encodedMessage[i]);
+		if(pointer==NULL)
+		{
+			//A character in the message was not found in the
+			//coded alphabet
+			return 0;
+		}
+		else
+		{
+			position = (abs(alphabetLength + (pointer - codedAlphabet) - shift))
+			%alphabetLength;
+			decodedMessage[i] = originalAlphabet[position];
+		}
+	}
+	decodedMessage[messageLength] = '\0';
+	return 0;
+}
+
+
+
+
+
+/// MY CODE STARTS HERE///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+int Encrypt(char* FileName,char* NewFileName,int key)
+{   key=atoi(key);
+	printf("Encryption Mode....\n");	
+	char *in[2];
+	in[0]='d';
+	char f[1];
+	f[0]=FileName;
+	char *buf[2];
+	char n[1];
+	char *buf2[2];
+	n[0]=NewFileName;	
+	strcpy(buf,f);
+	strcpy(buf2,n);
+	
+	int retIn;
+	int retOut;		
+	retIn = strncmp(buf,in,1);  // compares FileName with default ( 1 if I have input , 0 if I don't)
+	retOut= (strncmp(buf2,in,1));  // compares NewFileName with default (1 if I have output and 0 if I don't)	
+	
+	if (retIn==0)
+	{ // No input 
+		
+		int c;	
+		int Byte;
+		char* buffer[2048];
+		printf("Enter any string: ");
+		char* message = fgets(buffer,2048,stdin);		
+		FILE *temp = fopen("temp.txt", "w");
+		fprintf(temp,"%s",message);
+		fclose(temp);
+		FILE *temp2 = fopen("temp.txt","rb");
+		if (retOut==0)
+		{ // No input , no output			
+			if(message==NULL)
+			{
+				printf("Error: No input!\n");		
+			}
+			else 
+			{
+				printf("Working....\n");
+				printf("Encrypting....\n");				
+				while((c = fgetc(temp2)) != EOF)
+				{
+					char newByte;
+					Byte=((int)c+key)<<2;					
+					printf("%04x ",Byte); 				
+				}
+				printf("\nEncryption completed!\n");
+				fclose(temp2);
+			}
+		}
+		else if (retOut!=0)
+		{//No input , yes output
+			
+			char *outFile;	
+			int Byte;
+			int c;			
+			outFile = fopen(NewFileName, "w");
+			if(message==NULL)
+			{
+				printf("Error: No input!\n");		
+			}
+			else 
+			{
+				printf("Working....\n");
+				printf("Encrypting....\n");
+				while((c = fgetc(temp2)) != EOF)
+				{					
+					char newByte;
+					Byte=((int)c+key)<<2;
+					fprintf(outFile,"%04x ",Byte);					 				
+				}
+				printf("Encryption completed!\n");
+				fclose(temp2);
+				fclose(outFile);
+			}			
+		}
+		int status=remove("temp.txt");
+	}	
+	else if (retIn!=0)
+	{// Yes input
+		
+		if (retOut==0)
+		{// Yes input , No output
+			
+			FILE *inFile;
+			int Byte;
+			int c;
+			inFile = fopen(FileName,"rb");
+			printf("Opening....\n");
+			printf("Encrypting....\n");
+			while((c = fgetc(inFile)) != EOF)	
+			{				
+				char newByte;
+				Byte=((int)c+key)<<2;				
+				printf("%04x ",Byte); 				
+			}
+			printf("\nEncryption completed!\n");
+			fclose(inFile);
+		}
+		else if (retOut!=0)
+		{ // Yes input , yes output
+			
+			FILE *inFile;
+			FILE *outFile;	
+			int Byte;
+			int c;
+			inFile = fopen(FileName,"rb");
+			outFile = fopen(NewFileName, "w");
+			if(inFile==NULL)
+			{
+				printf("Error: Can't Open file!\n");		
+			}
+			else 
+			{
+				printf("Opening....\n");
+				printf("Encrypting....\n");
+				while((c = fgetc(inFile)) != EOF)	
+				{			
+					char newByte;
+					Byte=((int)c+key)<<2;
+					fprintf(outFile,"%04x ",Byte);
+				}
+				printf("Encryption completed!\n");
+				fclose(inFile);
+				fclose(outFile);				
+			}
+		}
+	}
+	
+	return 0;
+	
+}
+
+
+
+int Decrypt(char *FileName,char *NewFileName,int key)
+{   key=atoi(key);	
+	char *in[2];
+	in[0]='d';
+	char f[1];
+	f[0]=FileName;
+	char *buf[2];
+	char n[1];
+	char *buf2[2];
+	n[0]=NewFileName;	
+	strcpy(buf,f);
+	strcpy(buf2,n);
+	int retIn;
+	int retOut;		
+	retIn = strncmp(buf,in,1);  // compares FileName with default ( 1 if I have input , 0 if I don't)
+	retOut= strncmp(buf2,in,1);  // compares NewFileName with default (1 if I have output and 0 if I don't)		
+	FILE *inFile;
+	FILE *outFile;
+	char Byte;
+	char c;	
+	if (retIn==0)
+	{ // No input 
+		
+		char* buffer[2048];
+		printf("Enter any string to Decrypt: ");
+		char* message = fgets(buffer,2048,stdin);		
+		FILE *temp = fopen("temp.txt", "w");
+		fprintf(temp,"%s",message);
+		fclose(temp);
+		FILE *temp2 = fopen("temp.txt","rb");			
+		fseek(temp2,0,SEEK_END);
+		int size=ftell(temp2);
+		fseek(temp2,0,SEEK_SET);
+		if (retOut==0)
+		{ // No input , no output
+			
+			if(message==NULL)
+			{
+				printf("Error: No input!\n");		
+			}
+			else 
+			{
+				size_t space = 1;
+				char* buffer = malloc(space);
+				for (int i=0;i<size;i++)
+				{
+					c = fgetc(temp2);			
+					buffer[i]=c;
+					space++;
+					buffer=realloc(buffer,space);
+				}		
+				char* end;
+				long int l; long int l2;  
+				end=buffer;        	
+				printf("Opening....\nDecrypting....\n");			
+				for (int i=0 ; i<size/5;i++){		    
+					l=strtol (buffer,&end,16);	
+					buffer = end;
+					l=(l>>2)-key;
+					printf("%c",l);
+				}		
+				printf("\nDecryption completed!\n");
+				
+				fclose(temp2);
+			}
+		}
+		else if (retOut!=0)
+		{//No input , yes output
+			
+			outFile = fopen(NewFileName, "w");
+			if(message==NULL)
+			{
+				printf("Error: No input!\n");		
+			}
+			else 
+			{
+				size_t space = 1;
+				char* buffer = malloc(space);
+				for (int i=0;i<size;i++)
+				{
+					c = fgetc(temp2);			
+					buffer[i]=c;
+					space++;
+					buffer=realloc(buffer,space);
+				}		
+				char* end;
+				long int l; long int l2;  
+				end=buffer;        	
+				printf("Opening....\nDecrypting....\n");			
+				for (int i=0 ; i<size/5;i++){		    
+					l=strtol (buffer,&end,16);	
+					buffer = end;
+					l=(l>>2)-key;
+					fprintf(outFile,"%c",l);
+				}		
+				printf("Decryption completed!\n");
+				
+				fclose(temp2);
+				fclose(outFile);
+			}
+		}
+		int status=remove("temp.txt");
+	}	
+	else if (retIn!=0)
+	{// Yes input
+		
+		
+		inFile = fopen(FileName,"rb");
+		fseek(inFile,0,SEEK_END);
+		int size=ftell(inFile);
+		fseek(inFile,0,SEEK_SET);
+		if (retOut==0)
+		{// Yes input , No output
+			size_t space = 1;
+			char* buffer = malloc(space);
+			for (int i=0;i<size;i++)
+			{
+				c = fgetc(inFile);			
+				buffer[i]=c;
+				space++;
+				buffer=realloc(buffer,space);
+			}		
+			char* end;
+			long int l; long int l2;  
+			end=buffer;        	
+			printf("Opening....\nDecrypting....\n");			
+			for (int i=0 ; i<size/5;i++){		    
+				l=strtol (buffer,&end,16);	
+				buffer = end;
+				l=(l>>2)-key;
+				printf("%c",l);
+			}		
+			printf("\nDecryption completed!\n");
+			fclose(inFile);
+		}
+		else if (retOut!=0)
+		{ // Yes input , yes output
+			
+			FILE *inFile;
+			FILE *outFile;	
+			int Byte;
+			int c;
+			inFile = fopen(FileName,"rb");
+			outFile = fopen(NewFileName, "w");
+			
+			if(inFile==NULL)
+			{
+				printf("Error: Can't Open file!\n");		
+			}
+			else 
+			{
+				size_t space = 1;
+				char* buffer = malloc(space);
+				for (int i=0;i<size;i++)
+				{
+					c = fgetc(inFile);			
+					buffer[i]=c;
+					space++;
+					buffer=realloc(buffer,space);
+				}		
+				char* end;
+				long int l; long int l2;  
+				end=buffer;        	
+				printf("Opening....\nDecrypting....\n");			
+				for (int i=0 ; i<size/5;i++){		    
+					l=strtol (buffer,&end,16);	
+					buffer = end;
+					l=(l>>2)-key;					
+					fprintf(outFile,"%c",l);
+				}		
+				printf("Decryption completed!\n");
+				fclose(inFile);
+				fclose(outFile);	
+			}
+			
+		}
+	}
+	
+	return 0;
+}
+
+
+int main(int argc, char **argv[])
+{ 
+	char originalAlphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz!.,1234567890(*)&"; // stuff for Disk cipher  ADDED SUPPORT FOR LOWER CASE LETTERS AND NUMBERS AND SOME SYMBOLS.
+	char codedAlphabet[]    = "QWERTYUIOPASDFGHJKLZXCVBNM#zyxabcdefghijklmnopqrstuvw.,!0321654987*&()";  // stuff for Disk cipher
+	char encodedMessage[120];   // stuff for Disk cipher
+	char decodedMessage[120];   // stuff for Disk cipher
+	
+	char originalMessage[]  = "DISK CIPHERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR";
+	unsigned int shift = 15;   // stuff for Disk cipher
+	char buffer[100];
+	char* buff[10];	
+	char* key="200";	
+//char originalAlphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";  //SimpleSub 
+	//char codedAlphabet[]    = "QWERTYUIOPASDFGHJKLZXCVBNM#";  //SimpleSub
+	//char originalMessage[]  = "SUBSTITUTION CIPHERSUBSTITUTION CIPHERSUBSTITUTION CIPHERSUBSTITUTION CIPHERSUBSTITUTION CIPHERSUBSTITUTION CIPHERSUBSTITUTION CIPHERSUBSTITUTION CIPHERSUBSTITUTION CIPHERSUBSTITUTION CIPHERSUBSTITUTION CIPHER";   //SimpleSub
+	//char encodedMessage[200];   //SimpleSub
+	//char decodedMessage[200];  //SimpleSub
+	for (int i=0;i<10;i++) 
+	{
+		buff[i]="z";	
+	}	
+	for (int i=0;i<argc;i++)
+	{			
+		buff[i]=argv[i];
+		
+	}		
+	
+	char *output='d';
+	char *input='d';	
+	int flag=0;
+	int inflag=0;
+	////------------------- ENCRYPT
+	for (int i=0;i<10;i++){			
+		if ((strcmp(buff[i],"-e")==0) && (flag==0))
+		{ //encryption
+			flag=1;			
+			//printf("Encryption selected.\n");
+			for (int i=0;i<10;i++)
+			{	 		
+				if (strcmp(buff[i],"-i")==0)
+				{ //Input is provided
+			        inflag=1;
+					input=buff[i+1];					
+					
+					for (int i=0;i<10;i++)
+					{	
+						if (strcmp(buff[i],"-o")==0)
+						{ // Output is provided
+							output=buff[i+1];
+							
+							for (int i=0;i<10;i++)
+							{	
+								if (strcmp(buff[i],"-a")==0)
+								{ // Algorithm is provided
+									
+									for (int i=0;i<10;i++)
+									{	
+										if (strcmp(buff[i],"basic")==0)
+										{// Basic algorith is selected
+											
+											for (int i=0;i<10;i++)
+											{												    
+												if (strcmp(buff[i],"-k")==0)
+												{ // Key is provided
+													
+													key=buff[i+1];
+													//printf("INPUT IS : %c \n OUTPUT IS : %c \n KEY IS : %c",input,output,key);
+													Encrypt(input,output,key);													
+													goto end;
+												}
+												else if (i==9)
+												{ // default Key 200					
+													
+													//printf("INPUT IS : %c \n OUTPUT IS : %c \n KEY IS : %c",input,output,key);
+													Encrypt(input,output,key); 													
+													goto end;
+												}
+											}
+										}
+										else if (strcmp(buff[i],"disk")==0)
+										{											
+											FILE *inFile = fopen(input,"r");
+											FILE *outFile = fopen(output, "w");	
+											fseek(inFile,0,SEEK_END);
+											int size=ftell(inFile);
+											fseek(inFile,0,SEEK_SET);											
+											fgets(originalMessage, size, inFile);											
+											DiskCipher_Encode(originalAlphabet, codedAlphabet,
+											originalMessage, encodedMessage,shift);													
+											fprintf(outFile,"%s",encodedMessage);											
+											fclose(inFile);
+											fclose(outFile);
+											goto end;				
+										}
+										else if(strcmp(buff[i],"simple")==0)
+										{
+											FILE *inFile = fopen(input,"r");
+											FILE *outFile = fopen(output, "w");	
+											fseek(inFile,0,SEEK_END);
+											int size=ftell(inFile);
+											fseek(inFile,0,SEEK_SET);											
+											fgets(originalMessage, size, inFile);	
+											SimpleSubstitutionCipher_Code(originalAlphabet,codedAlphabet,
+							  originalMessage, encodedMessage);
+	
+												fprintf(outFile,"%s\n",encodedMessage);											
+											
+											fclose(inFile);
+											fclose(outFile);
+											goto end;
+										}
+										else if (i==9)
+								        { // Default algorithm is basic
+											
+											for (int i=0;i<10;i++)
+											{
+												if (strcmp(buff[i],"-k")==0)
+												{ // Key is provided
+													//printf("Key is provided.\n");
+													key=buff[i+1];
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+												else if (i==9)
+												{ // Keys is not provided.
+													//printf("Key is not provided.\nSwitching to default 200\n");
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}				
+											}			
+										}
+									}
+								}
+				                else if (i==9)
+				                { //no -a. Default algorithm is basic			
+				                 	
+									for (int i=0;i<10;i++){
+				                   	    if (strcmp(buff[i],"-k")==0)
+					                    { // Key is provided
+											//printf("Key is provided.\n");
+											key=buff[i+1];
+											
+					                     	Encrypt(input,output,key); 
+											goto end;
+										}
+										else if (i==9)
+				                     	{ // default Key 200
+					                     	//printf("No key inserted.Default Key is 200.\n");
+											
+					                     	Encrypt(input,output,key); 
+											goto end;
+										}
+									}  
+								}
+							}
+						}
+			            else if ((i==9))
+			            { // Default output is STDOUT
+			             	
+							output='d';
+							for (int i=0;i<10;i++)
+							{  
+								if (strcmp(buff[i],"-a")==0)
+								{ // Algorithm is provided
+				                 	
+									for (int i=0;i<10;i++)
+									{
+										if (strcmp(buff[i],"basic")==0)
+										{// Basic algorith is selected
+											
+											for (int i=0;i<10;i++)
+											{
+												if (strcmp(buff[i],"-k")==0)
+												{ // Key is provided
+													//printf("Key is provided.\n");
+													key=buff[i+1];
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+												else if (i==9)
+												{ // default Key 200
+													
+													Encrypt(input,output,key);   
+													goto end;
+												}
+											}
+										}
+										else if (strcmp(buff[i],"disk")==0)
+										{
+											FILE *inFile = fopen(input,"r");
+											
+											fseek(inFile,0,SEEK_END);
+											int size=ftell(inFile);
+											fseek(inFile,0,SEEK_SET);
+											fgets(originalMessage, size, inFile);											
+											DiskCipher_Encode(originalAlphabet, codedAlphabet,
+											originalMessage, encodedMessage,shift);	
+											puts(encodedMessage);
+											//printf("%s\n",encodedMessage);											
+											fclose(inFile);
+											
+											goto end;															
+										}
+										else if(strcmp(buff[i],"simple")==0)
+										{
+											FILE *inFile = fopen(input,"r");											
+											fseek(inFile,0,SEEK_END);
+											int size=ftell(inFile);
+											fseek(inFile,0,SEEK_SET);											
+											fgets(originalMessage, size, inFile);												
+											SimpleSubstitutionCipher_Code(originalAlphabet,codedAlphabet,
+							  originalMessage, encodedMessage);
+	puts(encodedMessage);								
+											fclose(inFile);											
+											goto end;
+										}
+										else if (i==9) //else if for future use with more algorithms!!!!!!!
+										{ // Default algorithm is basic
+											
+											for (int i=0;i<10;i++)
+											{
+												if (strcmp(buff[i],"-k")==0)
+												{ // Key is provided
+													//printf("Key is provided.\n");
+													key= buff[i+1];
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+												else if (i==9)
+												{ // default Key 200
+													
+													
+													Encrypt(input,output,key); 
+													goto end;
+												}
+											}
+										}
+									}
+								}								
+								else if (i==9)
+								{ // Default algorithm is basic
+									
+									for (int i=0;i<10;i++)
+									{
+										if (strcmp(buff[i],"-k")==0)
+										{ // Key is provided
+											
+											key=buff[i+1];
+											
+											Encrypt(input,output,key);  
+											goto end;
+										}
+										else if (i==9)
+										{ // Keys is not provided.
+											
+											Encrypt(input,output,key); 
+											goto end;
+										}				
+									}			
+								}
+								
+							}				
+						}
+					}
+				}				
+				else if ((i==9))
+				{
+					//Default read from STDIN
+					
+					input='d';					
+					for (int i=0;i<10;i++)
+					{
+						if (strcmp(buff[i],"-o")==0)
+						{ //Output is provided
+							
+							output=buff[i+1];
+							for (int i=0;i<10;i++)
+							{
+								if (strcmp(buff[i],"-a")==0)
+								{// Algorithm is provided.
+									
+									for (int i=0;i<10;i++)
+									{
+										if (strcmp(buff[i],"basic")==0)
+										{// Basic algorith is selected
+											
+											for (int i=0;i<10;i++)
+											{
+												if(strcmp(buff[i],"-k")==0)
+												{// Key is provided
+													
+													key=buff[i+1];	
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+												else 
+												{// No key is provided
+													
+													Encrypt(input,output,key); 
+													goto end;
+												}
+											}
+										}
+										else if (strcmp(buff[i],"disk")==0)
+										{
+											FILE * outFile;
+											printf("Enter any string: ");
+											fgets(originalMessage,2048,stdin);	
+											DiskCipher_Encode(originalAlphabet, codedAlphabet,
+											originalMessage, encodedMessage,shift);											
+											outFile = fopen(output, "w");											
+											fprintf(outFile,"%s",encodedMessage); 
+											fclose(outFile);
+											goto end;					
+										}
+										else if(strcmp(buff[i],"simple")==0)
+										{
+											
+											FILE *outFile = fopen(output, "w");	
+											printf("Enter any string: ");
+											fgets(originalMessage,2048,stdin);											
+											SimpleSubstitutionCipher_Code(originalAlphabet,codedAlphabet,
+							  originalMessage, encodedMessage);
+	fprintf(outFile,"%s",encodedMessage); 								
+											
+											
+											fclose(outFile);
+											goto end;
+										}
+										else if(i==9)
+										{//Wrng name of algorith
+											
+											for (int i=0;i<10;i++)
+											{
+												if(strcmp(buff[i],"-k")==0)
+												{// Key is provided
+													
+													key=buff[i+1];
+													
+													Encrypt(input,output,key); 
+													goto end;
+												}
+												else if (i==9)
+												{// No key is provided
+													
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+											}
+										}										
+									}
+								}
+								else if (i==9)
+								{// no algorithm is provided
+									
+									for (int i=0;i<10;i++)
+									{
+										if(strcmp(buff[i],"-k")==0)
+										{// Key is provided
+											
+											key=buff[i+1];
+											
+											Encrypt(input,output,key);  
+											goto end;
+										}
+										else if (i==9)
+										{// No key is provided
+											
+											Encrypt(input,output,key);  
+											goto end;
+										}
+									}	
+								}								
+							}
+						}
+						else if (i==9)
+						{ // Default output to STDOUT
+							
+							output='d';
+							for (int i=0;i<10;i++)
+							{
+								if (strcmp(buff[i],"-a")==0)
+								{// algorithm was provided
+									
+									for (int i=0;i<10;i++)
+									{
+										if (strcmp(buff[i],"basic")==0)
+										{// basic algorith was selected
+											
+											for (int i=0;i<10;i++)
+											{
+												if (strcmp(buff[i],"-k")==0)
+												{// key is provided
+													//printf("Key is provided.\n");
+													key=buff[i+1];
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+												else if (i==9)
+												{// key is default 200
+													printf("No key was selected.\nSwitching to default 200.\n");
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+											}
+										}
+										else if (strcmp(buff[i],"disk")==0)
+										{  									        
+											printf("Enter any string: ");
+											fgets(originalMessage,2048,stdin);	
+											DiskCipher_Encode(originalAlphabet, codedAlphabet,
+											originalMessage, encodedMessage,shift);	
+											printf("%s\n",encodedMessage);
+											goto end;			
+										}
+										else if(strcmp(buff[i],"simple")==0)
+										{
+											printf("Enter any string: ");
+											fgets(originalMessage,2048,stdin);												
+											SimpleSubstitutionCipher_Code(originalAlphabet,codedAlphabet,
+							  originalMessage, encodedMessage);
+											printf("%s\n",encodedMessage);																						
+											goto end;
+										}
+										else if (i==9)
+										{// wrong name algorithm
+											
+											for (int i=0;i<10;i++)
+											{
+												if (strcmp(buff[i],"-k")==0)
+												{// key is provided
+													
+													key=buff[i+1];
+													
+													Encrypt(input,output,key); 
+													goto end;
+												}
+												else if (i==9)
+												{// key is default 200
+													
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+											}
+										}										
+									}
+								}
+								else if (i==9)
+								{// no algorithm
+									
+									for (int i=0;i<10;i++)
+									{
+										if (strcmp(buff[i],"-k")==0)
+										{// key is provided
+											
+											key=buff[i+1];
+											
+											Encrypt(input,output,key); 
+											goto end;
+										}
+										else 
+										{// key is default 200
+											
+											Encrypt(input,output,key);  
+											goto end;
+										}
+									}
+								}								
+							}			
+						}						
+					}
+				}				
+			}
+		}		
+	}
+	//-------------DECRYPT-----------------------------------------------------------------------------------------------------------------------------------------------
+	for (int i=0;i<10;i++)
+	{			
+		if ((strcmp(buff[i],"-d")==0) && (flag==0))
+		{ //Decryption
+			flag=1;
+			
+			
+			for (int i=0;i<10;i++)
+			{	 		
+				if (strcmp(buff[i],"-i")==0)
+				{ //Input is provided
+					
+					input=buff[i+1];					
+					
+					for (int i=0;i<10;i++)
+					{	
+						if (strcmp(buff[i],"-o")==0)
+						{ // Output is provided
+							output=buff[i+1];
+							
+							for (int i=0;i<10;i++)
+							{	
+								if (strcmp(buff[i],"-a")==0)
+								{ // Algorithm is provided
+									
+									for (int i=0;i<10;i++)
+									{	
+										if (strcmp(buff[i],"basic")==0)
+										{// Basic algorith is selected
+											
+											for (int i=0;i<10;i++)
+											{												    
+												if (strcmp(buff[i],"-k")==0)
+												{ // Key is provided
+													
+													key=buff[i+1];
+													
+													Decrypt(input,output,key);													
+													goto end;
+												}
+												else if (i==9)
+												{ // default Key 200					
+													
+													Decrypt(input,output,key); 													
+													goto end;
+												}
+											}
+										}
+										else if (strcmp(buff[i],"disk")==0)
+										{
+											FILE *inFile = fopen(input,"r");
+											FILE*  outFile = fopen(output, "w");	
+											fseek(inFile,0,SEEK_END);
+											int size=ftell(inFile);
+											fseek(inFile,0,SEEK_SET);
+											fgets(originalMessage, size, inFile)	;											
+											DiskCipher_Decode(originalAlphabet, codedAlphabet,
+											originalMessage, encodedMessage,shift);													
+											fprintf(outFile,"%s",encodedMessage);											
+											fclose(inFile);
+											fclose(outFile);
+											goto end;					
+										}
+										else if(strcmp(buff[i],"simple")==0)
+										{
+											FILE *inFile = fopen(input,"r");
+											FILE *outFile = fopen(output, "w");	
+											fseek(inFile,0,SEEK_END);
+											int size=ftell(inFile);
+											fseek(inFile,0,SEEK_SET);											
+											fgets(encodedMessage, size, inFile);												
+											SimpleSubstitutionCipher_Code(codedAlphabet,originalAlphabet,
+							  encodedMessage, decodedMessage);
+												fprintf(outFile,"%s\n",decodedMessage);											
+											
+											fclose(inFile);
+											fclose(outFile);
+											goto end;
+										}
+										else if (i==9)
+								        { // Default algorithm is basic
+											
+											for (int i=0;i<10;i++)
+											{
+												if (strcmp(buff[i],"-k")==0)
+												{ // Key is provided
+													
+													key=buff[i+1];
+													
+													Decrypt(input,output,key);  
+													goto end;
+												}
+												else if (i==9)
+												{ // Keys is not provided.
+													
+													Decrypt(input,output,key);  
+													goto end;
+												}				
+											}			
+										}										
+									}
+								}
+				                else if (i==9)
+				                { //no -a. Default algorithm is basic			
+				                 	
+									for (int i=0;i<10;i++){
+				                   	    if (strcmp(buff[i],"-k")==0)
+					                    { // Key is provided
+											
+											key=buff[i+1];
+											
+					                     	Decrypt(input,output,key); 
+											goto end;
+										}
+										else if (i==9)
+				                     	{ // default Key 200
+					                     	
+					                     	Decrypt(input,output,key); 
+											goto end;
+										}
+									}  
+								}
+							}
+						}
+			            else if ((i==9))
+			            { // Default output is STDOUT
+							
+							
+							output='d';
+							for (int i=0;i<10;i++)
+							{  
+								if (strcmp(buff[i],"-a")==0)
+								{ // Algorithm is provided
+				                 	
+									for (int i=0;i<10;i++)
+									{
+										if (strcmp(buff[i],"basic")==0)
+										{// Basic algorith is selected
+											
+											for (int i=0;i<10;i++)
+											{
+												if (strcmp(buff[i],"-k")==0)
+												{ // Key is provided
+													
+													key=buff[i+1];
+													
+													Decrypt(input,output,key); 
+													goto end;
+												}
+												else if (i==9)
+												{ // default Key 200
+													
+													Decrypt(input,output,key);  
+													goto end;
+												}
+											}
+										}
+										else if (strcmp(buff[i],"disk")==0)
+										{  
+									        FILE *inFile = fopen(input,"r");											
+											fseek(inFile,0,SEEK_END);
+											int size=ftell(inFile);
+											fseek(inFile,0,SEEK_SET);
+											fgets(originalMessage, size, inFile)	;											
+											DiskCipher_Decode(originalAlphabet, codedAlphabet,
+											originalMessage, encodedMessage,shift);													
+											printf("%s\n",encodedMessage);											
+											fclose(inFile);											
+											goto end;														
+										}
+										else if(strcmp(buff[i],"simple")==0)
+										{
+											FILE *inFile = fopen(input,"r");											
+											fseek(inFile,0,SEEK_END);
+											int size=ftell(inFile);
+											fseek(inFile,0,SEEK_SET);											
+											fgets(encodedMessage, size, inFile);												
+											SimpleSubstitutionCipher_Code(codedAlphabet,originalAlphabet,
+							  encodedMessage, decodedMessage);
+												printf("%s\n",decodedMessage);					
+											fclose(inFile);											
+											goto end;
+										}
+										else if (i==9) //else if for future use with more algorithms!!!!!!!
+										{ // Default algorithm is basic
+											
+											for (int i=0;i<10;i++)
+											{
+												if (strcmp(buff[i],"-k")==0)
+												{ // Key is provided
+													
+													key= buff[i+1];
+													
+													Decrypt(input,output,key);  
+													goto end;
+												}
+												else if (i==9)
+												{ // default Key 200
+													
+													Decrypt(input,output,key);   
+												}
+											}
+										}
+									}
+								}								
+								else if (i==9)
+								{ // Default algorithm is basic
+									
+									for (int i=0;i<10;i++)
+									{
+										if (strcmp(buff[i],"-k")==0)
+										{ // Key is provided
+											
+											key=buff[i+1];
+											
+											Decrypt(input,output,key); 
+											goto end;
+										}
+										else if (i==9)
+										{ // Keys is not provided.
+											
+											Decrypt(input,output,key); 
+											goto end;
+										}				
+									}			
+								}
+								
+							}				
+						}
+					}
+				}				
+				else if (i==9)
+				{
+					//Default read from STDIN
+					
+					input='d';					
+					for (int i=0;i<10;i++)
+					{
+						if (strcmp(buff[i],"-o")==0)
+						{ //Output is provided
+							printf("Output is provided.\n");
+							output=buff[i+1];
+							for (int i=0;i<10;i++)
+							{
+								if (strcmp(buff[i],"-a")==0)
+								{// Algorithm is provided.
+									
+									for (int i=0;i<10;i++)
+									{
+										if (strcmp(buff[i],"basic")==0)
+										{// Basic algorith is selected
+											
+											for (int i=0;i<10;i++)
+											{
+												if(strcmp(buff[i],"-k")==0)
+												{// Key is provided
+													
+													key=buff[i+1];	
+													
+													Decrypt(input,output,key);  
+													goto end;
+												}
+												else 
+												{// No key is provided
+													
+													Decrypt(input,output,key); 
+													goto end;
+												}
+											}
+										}
+										else if (strcmp(buff[i],"disk")==0)
+										{  
+									        
+											FILE*  outFile = fopen(output, "w");												
+											printf("Enter any string: ");
+											fgets(originalMessage,2048,stdin);										
+											DiskCipher_Decode(originalAlphabet, codedAlphabet,
+											originalMessage, encodedMessage,shift);													
+											fprintf(outFile,"%s",encodedMessage);										
+											fclose(outFile);
+											goto end;			
+										}
+										else if(strcmp(buff[i],"simple")==0)
+										{
+											
+											FILE *outFile = fopen(output, "w");	
+											printf("Enter any string: ");
+											fgets(encodedMessage,2048,stdin);																						
+											SimpleSubstitutionCipher_Code(codedAlphabet,originalAlphabet,
+							  encodedMessage, decodedMessage);
+												fprintf(outFile,"%s\n",decodedMessage);												
+											
+											
+											fclose(outFile);
+											goto end;
+										}
+										else if(i==9)
+										{//Wrng name of algorith
+											
+											for (int i=0;i<10;i++)
+											{
+												if(strcmp(buff[i],"-k")==0)
+												{// Key is provided
+													
+													key=buff[i+1];
+													
+													Decrypt(input,output,key);  
+													goto end;
+												}
+												else if (i==9)
+												{// No key is provided
+													
+													Decrypt(input,output,key); 
+													goto end;
+												}
+											}
+										}										
+									}
+								}
+								else if (i==9)
+								{// no algorithm is provided
+									//printf("No algorithm was provided.\nSwitching to default basic.\n");
+									for (int i=0;i<10;i++)
+									{
+										if(strcmp(buff[i],"-k")==0)
+										{// Key is provided
+											
+											key=buff[i+1];
+											
+											Decrypt(input,output,key); 
+											goto end;
+										}
+										else if (i==9)
+										{// No key is provided
+											
+											Decrypt(input,output,key);
+											goto end;
+										}
+									}	
+								}								
+							}
+						}
+						else if (i==9)
+						{ // Default output to STDOUT
+							
+							output='d';
+							for (int i=0;i<10;i++)
+							{
+								if (strcmp(buff[i],"-a")==0)
+								{// algorithm was provided
+									
+									for (int i=0;i<10;i++)
+									{
+										if (strcmp(buff[i],"basic")==0)
+										{// basic algorith was selected
+											
+											for (int i=0;i<10;i++)
+											{
+												if (strcmp(buff[i],"-k")==0)
+												{// key is provided
+													
+													key=buff[i+1];
+													
+													Decrypt(input,output,key);  
+													goto end;
+												}
+												else if (i==9)
+												{// key is default 200
+													
+													Decrypt(input,output,key); 
+													goto end;
+												}
+											}
+										}
+										else if (strcmp(buff[i],"disk")==0)
+										{			       										
+											
+											printf("Enter any string: ");
+											fgets(originalMessage,2048,stdin);											
+											DiskCipher_Decode(originalAlphabet, codedAlphabet,
+											originalMessage, encodedMessage,shift);													
+											printf("%s\n",encodedMessage);																			
+											goto end;		
+										}
+											else if(strcmp(buff[i],"simple")==0)
+										{
+											printf("Enter any string: ");
+											fgets(encodedMessage,2048,stdin);																						
+											SimpleSubstitutionCipher_Code(codedAlphabet,originalAlphabet,
+							  encodedMessage, decodedMessage);												
+											printf("%s\n",decodedMessage);																						
+											goto end;
+										}
+										else if (i==9)
+										{// wrong name algorithm
+											
+											for (int i=0;i<10;i++)
+											{
+												if (strcmp(buff[i],"-k")==0)
+												{// key is provided
+													
+													key=buff[i+1];
+													
+													Decrypt(input,output,key); 
+													goto end;
+												}
+												else if (i==9)
+												{// key is default 200
+													
+													Decrypt(input,output,key); 
+													goto end;
+												}
+											}
+										}										
+									}
+								}
+								else if (i==9)
+								{// no algorithm
+									
+									for (int i=0;i<10;i++)
+									{
+										if (strcmp(buff[i],"-k")==0)
+										{// key is provided
+											
+											key=buff[i+1];
+											
+											Decrypt(input,output,key);  
+											goto end;
+										}
+										else 
+										{// key is default 200
+											
+											Decrypt(input,output,key); 
+											goto end;
+										}
+									}
+								}								
+							}			
+						}						
+					}
+				}				
+			}
+		}		
+	}
+	//------------DEFAULT ENCRYPT -----------------------------------------------------------------------------------------------------
+	for (int i=0;i<10;i++)
+	{			
+		if (flag==0)
+		{ //encryption
+			flag=1;			
+			
+						for (int i=0;i<10;i++)
+			{	 		
+				if (strcmp(buff[i],"-i")==0)
+				{ //Input is provided
+			        inflag=1;
+					input=buff[i+1];					
+					
+					for (int i=0;i<10;i++)
+					{	
+						if (strcmp(buff[i],"-o")==0)
+						{ // Output is provided
+							output=buff[i+1];
+							
+							for (int i=0;i<10;i++)
+							{	
+								if (strcmp(buff[i],"-a")==0)
+								{ // Algorithm is provided
+									
+									for (int i=0;i<10;i++)
+									{	
+										if (strcmp(buff[i],"basic")==0)
+										{// Basic algorith is selected
+											
+											for (int i=0;i<10;i++)
+											{												    
+												if (strcmp(buff[i],"-k")==0)
+												{ // Key is provided
+													
+													key=buff[i+1];
+													//printf("INPUT IS : %c \n OUTPUT IS : %c \n KEY IS : %c",input,output,key);
+													Encrypt(input,output,key);													
+													goto end;
+												}
+												else if (i==9)
+												{ // default Key 200					
+													
+													//printf("INPUT IS : %c \n OUTPUT IS : %c \n KEY IS : %c",input,output,key);
+													Encrypt(input,output,key); 													
+													goto end;
+												}
+											}
+										}
+										else if (strcmp(buff[i],"disk")==0)
+										{											
+											FILE *inFile = fopen(input,"r");
+											FILE *outFile = fopen(output, "w");	
+											fseek(inFile,0,SEEK_END);
+											int size=ftell(inFile);
+											fseek(inFile,0,SEEK_SET);											
+											fgets(originalMessage, size, inFile);											
+											DiskCipher_Encode(originalAlphabet, codedAlphabet,
+											originalMessage, encodedMessage,shift);													
+											fprintf(outFile,"%s",encodedMessage);											
+											fclose(inFile);
+											fclose(outFile);
+											goto end;				
+										}
+										else if(strcmp(buff[i],"simple")==0)
+										{
+											FILE *inFile = fopen(input,"r");
+											FILE *outFile = fopen(output, "w");	
+											fseek(inFile,0,SEEK_END);
+											int size=ftell(inFile);
+											fseek(inFile,0,SEEK_SET);											
+											fgets(originalMessage, size, inFile);	
+											SimpleSubstitutionCipher_Code(originalAlphabet,codedAlphabet,
+							  originalMessage, encodedMessage);
+	
+												fprintf(outFile,"%s\n",encodedMessage);											
+											
+											fclose(inFile);
+											fclose(outFile);
+											goto end;
+										}
+										else if (i==9)
+								        { // Default algorithm is basic
+											
+											for (int i=0;i<10;i++)
+											{
+												if (strcmp(buff[i],"-k")==0)
+												{ // Key is provided
+													//printf("Key is provided.\n");
+													key=buff[i+1];
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+												else if (i==9)
+												{ // Keys is not provided.
+													//printf("Key is not provided.\nSwitching to default 200\n");
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}				
+											}			
+										}
+									}
+								}
+				                else if (i==9)
+				                { //no -a. Default algorithm is basic			
+				                 	
+									for (int i=0;i<10;i++){
+				                   	    if (strcmp(buff[i],"-k")==0)
+					                    { // Key is provided
+											//printf("Key is provided.\n");
+											key=buff[i+1];
+											
+					                     	Encrypt(input,output,key); 
+											goto end;
+										}
+										else if (i==9)
+				                     	{ // default Key 200
+					                     	//printf("No key inserted.Default Key is 200.\n");
+											
+					                     	Encrypt(input,output,key); 
+											goto end;
+										}
+									}  
+								}
+							}
+						}
+			            else if ((i==9))
+			            { // Default output is STDOUT
+			             	
+							output='d';
+							for (int i=0;i<10;i++)
+							{  
+								if (strcmp(buff[i],"-a")==0)
+								{ // Algorithm is provided
+				                 	
+									for (int i=0;i<10;i++)
+									{
+										if (strcmp(buff[i],"basic")==0)
+										{// Basic algorith is selected
+											
+											for (int i=0;i<10;i++)
+											{
+												if (strcmp(buff[i],"-k")==0)
+												{ // Key is provided
+													//printf("Key is provided.\n");
+													key=buff[i+1];
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+												else if (i==9)
+												{ // default Key 200
+													
+													Encrypt(input,output,key);   
+													goto end;
+												}
+											}
+										}
+										else if (strcmp(buff[i],"disk")==0)
+										{
+											FILE *inFile = fopen(input,"r");
+											
+											fseek(inFile,0,SEEK_END);
+											int size=ftell(inFile);
+											fseek(inFile,0,SEEK_SET);
+											fgets(originalMessage, size, inFile);											
+											DiskCipher_Encode(originalAlphabet, codedAlphabet,
+											originalMessage, encodedMessage,shift);	
+											puts(encodedMessage);
+											//printf("%s\n",encodedMessage);											
+											fclose(inFile);
+											
+											goto end;															
+										}
+										else if(strcmp(buff[i],"simple")==0)
+										{
+											FILE *inFile = fopen(input,"r");											
+											fseek(inFile,0,SEEK_END);
+											int size=ftell(inFile);
+											fseek(inFile,0,SEEK_SET);											
+											fgets(originalMessage, size, inFile);												
+											SimpleSubstitutionCipher_Code(originalAlphabet,codedAlphabet,
+							  originalMessage, encodedMessage);
+	puts(encodedMessage);								
+											fclose(inFile);											
+											goto end;
+										}
+										else if (i==9) //else if for future use with more algorithms!!!!!!!
+										{ // Default algorithm is basic
+											
+											for (int i=0;i<10;i++)
+											{
+												if (strcmp(buff[i],"-k")==0)
+												{ // Key is provided
+													//printf("Key is provided.\n");
+													key= buff[i+1];
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+												else if (i==9)
+												{ // default Key 200
+													
+													
+													Encrypt(input,output,key); 
+													goto end;
+												}
+											}
+										}
+									}
+								}								
+								else if (i==9)
+								{ // Default algorithm is basic
+									
+									for (int i=0;i<10;i++)
+									{
+										if (strcmp(buff[i],"-k")==0)
+										{ // Key is provided
+											
+											key=buff[i+1];
+											
+											Encrypt(input,output,key);  
+											goto end;
+										}
+										else if (i==9)
+										{ // Keys is not provided.
+											
+											Encrypt(input,output,key); 
+											goto end;
+										}				
+									}			
+								}
+								
+							}				
+						}
+					}
+				}				
+				else if ((i==9))
+				{
+					//Default read from STDIN
+					
+					input='d';					
+					for (int i=0;i<10;i++)
+					{
+						if (strcmp(buff[i],"-o")==0)
+						{ //Output is provided
+							
+							output=buff[i+1];
+							for (int i=0;i<10;i++)
+							{
+								if (strcmp(buff[i],"-a")==0)
+								{// Algorithm is provided.
+									
+									for (int i=0;i<10;i++)
+									{
+										if (strcmp(buff[i],"basic")==0)
+										{// Basic algorith is selected
+											
+											for (int i=0;i<10;i++)
+											{
+												if(strcmp(buff[i],"-k")==0)
+												{// Key is provided
+													
+													key=buff[i+1];	
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+												else 
+												{// No key is provided
+													
+													Encrypt(input,output,key); 
+													goto end;
+												}
+											}
+										}
+										else if (strcmp(buff[i],"disk")==0)
+										{
+											FILE * outFile;
+											printf("Enter any string: ");
+											fgets(originalMessage,2048,stdin);	
+											DiskCipher_Encode(originalAlphabet, codedAlphabet,
+											originalMessage, encodedMessage,shift);											
+											outFile = fopen(output, "w");											
+											fprintf(outFile,"%s",encodedMessage); 
+											fclose(outFile);
+											goto end;					
+										}
+										else if(strcmp(buff[i],"simple")==0)
+										{
+											
+											FILE *outFile = fopen(output, "w");	
+											printf("Enter any string: ");
+											fgets(originalMessage,2048,stdin);											
+											SimpleSubstitutionCipher_Code(originalAlphabet,codedAlphabet,
+							  originalMessage, encodedMessage);
+	fprintf(outFile,"%s",encodedMessage); 								
+											
+											
+											fclose(outFile);
+											goto end;
+										}
+										else if(i==9)
+										{//Wrng name of algorith
+											
+											for (int i=0;i<10;i++)
+											{
+												if(strcmp(buff[i],"-k")==0)
+												{// Key is provided
+													
+													key=buff[i+1];
+													
+													Encrypt(input,output,key); 
+													goto end;
+												}
+												else if (i==9)
+												{// No key is provided
+													
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+											}
+										}										
+									}
+								}
+								else if (i==9)
+								{// no algorithm is provided
+									
+									for (int i=0;i<10;i++)
+									{
+										if(strcmp(buff[i],"-k")==0)
+										{// Key is provided
+											
+											key=buff[i+1];
+											
+											Encrypt(input,output,key);  
+											goto end;
+										}
+										else if (i==9)
+										{// No key is provided
+											
+											Encrypt(input,output,key);  
+											goto end;
+										}
+									}	
+								}								
+							}
+						}
+						else if (i==9)
+						{ // Default output to STDOUT
+							
+							output='d';
+							for (int i=0;i<10;i++)
+							{
+								if (strcmp(buff[i],"-a")==0)
+								{// algorithm was provided
+									
+									for (int i=0;i<10;i++)
+									{
+										if (strcmp(buff[i],"basic")==0)
+										{// basic algorith was selected
+											
+											for (int i=0;i<10;i++)
+											{
+												if (strcmp(buff[i],"-k")==0)
+												{// key is provided
+													//printf("Key is provided.\n");
+													key=buff[i+1];
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+												else if (i==9)
+												{// key is default 200
+													printf("No key was selected.\nSwitching to default 200.\n");
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+											}
+										}
+										else if (strcmp(buff[i],"disk")==0)
+										{  									        
+											printf("Enter any string: ");
+											fgets(originalMessage,2048,stdin);	
+											DiskCipher_Encode(originalAlphabet, codedAlphabet,
+											originalMessage, encodedMessage,shift);	
+											printf("%s\n",encodedMessage);
+											goto end;			
+										}
+										else if(strcmp(buff[i],"simple")==0)
+										{
+											printf("Enter any string: ");
+											fgets(originalMessage,2048,stdin);												
+											SimpleSubstitutionCipher_Code(originalAlphabet,codedAlphabet,
+							  originalMessage, encodedMessage);
+											printf("%s\n",encodedMessage);																						
+											goto end;
+										}
+										else if (i==9)
+										{// wrong name algorithm
+											
+											for (int i=0;i<10;i++)
+											{
+												if (strcmp(buff[i],"-k")==0)
+												{// key is provided
+													
+													key=buff[i+1];
+													
+													Encrypt(input,output,key); 
+													goto end;
+												}
+												else if (i==9)
+												{// key is default 200
+													
+													
+													Encrypt(input,output,key);  
+													goto end;
+												}
+											}
+										}										
+									}
+								}
+								else if (i==9)
+								{// no algorithm
+									
+									for (int i=0;i<10;i++)
+									{
+										if (strcmp(buff[i],"-k")==0)
+										{// key is provided
+											
+											key=buff[i+1];
+											
+											Encrypt(input,output,key); 
+											goto end;
+										}
+										else 
+										{// key is default 200
+											
+											Encrypt(input,output,key);  
+											goto end;
+										}
+									}
+								}								
+							}			
+						}						
+					}
+				}				
+			}
+		}		
+	}
+	
+	end:	
+	return 0;
+}
